@@ -185,7 +185,7 @@ header{
 <h4>Desayunos</h4>
 <div class="cards">
 <div class="card">
-<img src="cafe.JPG">
+<img src="imagen/cafe.JPG">
 <h5>Café</h5>
 <div class="price">$20</div>
 <button class="btn-mini" onclick="agregar('Café',20)">Agregar</button>
@@ -284,6 +284,7 @@ header{
 
 <script>
 let pedidos = [];
+let numeroPedido = 1; // contador automático
 
 function mostrar(id){
     document.getElementById('menu').classList.add('hidden');
@@ -293,6 +294,7 @@ function mostrar(id){
 
     if(id === 'ticket'){
         actualizarFechaHora();
+        document.getElementById("numPedido").textContent = numeroPedido;
     }
 }
 
@@ -343,7 +345,10 @@ function finalizarPedido(){
         alert("No hay productos en el pedido");
         return;
     }
-    alert("Pedido finalizado con éxito");
+
+    alert("Pedido #" + numeroPedido + " finalizado con éxito");
+
+    numeroPedido++; // aumenta el folio automáticamente
     pedidos = [];
     actualizar();
     mostrar('menu');
@@ -360,4 +365,5 @@ function imprimirTicket(){
 
 </body>
 </html>
+
 
