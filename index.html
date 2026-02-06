@@ -105,7 +105,6 @@ header{
     color:#2e7d32;
 }
 
-/* BOTONES */
 .btn-mini{
     background:#81c784;
     color:#1b5e20;
@@ -117,11 +116,6 @@ header{
     margin-top:6px;
 }
 
-.btn-mini:hover{
-    background:#66bb6a;
-}
-
-/* PEDIDOS Y TICKET */
 .order-item{
     background:white;
     padding:10px;
@@ -129,31 +123,18 @@ header{
     display:flex;
     justify-content:space-between;
     border-radius:8px;
-    box-shadow:0 2px 4px rgba(0,0,0,.1);
 }
 
-/* TOTAL */
 .total{
     font-size:18px;
     font-weight:bold;
     margin-top:12px;
-    color:#4e342e;
 }
 
-/* SOLO IMPRIME EL TICKET */
 @media print {
-    body * {
-        visibility: hidden;
-    }
-    #ticket, #ticket * {
-        visibility: visible;
-    }
-    #ticket {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-    }
+    body * { visibility:hidden; }
+    #ticket, #ticket * { visibility:visible; }
+    #ticket { position:absolute; left:0; top:0; width:100%; }
 }
 </style>
 </head>
@@ -167,23 +148,20 @@ header{
 <div class="container">
 
 <div class="sidebar">
-    <button onclick="mostrar('menu')">MENÚ</button>
-    <button onclick="mostrar('pedidos')">PEDIDOS</button>
-    <button onclick="mostrar('ticket')">TICKET</button>
+<button onclick="mostrar('menu')">MENÚ</button>
+<button onclick="mostrar('pedidos')">PEDIDOS</button>
+<button onclick="mostrar('ticket')">TICKET</button>
 </div>
 
 <div class="content">
 
 <!-- MENÚ -->
 <div id="menu" class="section">
-<h3>Nosotros somos</h3>
-<p><b>Somos un espacio donde el sabor y la energía se juntan para acompañarte todos los días.</b></p>
 
 <h3>Menú</h3>
 
-<div class="category">
-<h4>Desayunos</h4>
 <div class="cards">
+
 <div class="card">
 <img src="cafe.JPG">
 <h5>Café</h5>
@@ -199,25 +177,6 @@ header{
 </div>
 
 <div class="card">
-<img src="huevo.jpeg">
-<h5>Huevos al gusto</h5>
-<div class="price">$40</div>
-<button class="btn-mini" onclick="agregar('Huevos al gusto',40)">Agregar</button>
-</div>
-</div>
-</div>
-
-<div class="category">
-<h4>Comida</h4>
-<div class="cards">
-<div class="card">
-<img src="OIP.jpeg">
-<h5>Cecina</h5>
-<div class="price">$60</div>
-<button class="btn-mini" onclick="agregar('Cecina',60)">Agregar</button>
-</div>
-
-<div class="card">
 <img src="tacos.jpg">
 <h5>Tacos</h5>
 <div class="price">$35</div>
@@ -225,38 +184,12 @@ header{
 </div>
 
 <div class="card">
-<img src="enchiladas.jpeg">
-<h5>Enchiladas</h5>
-<div class="price">$35</div>
-<button class="btn-mini" onclick="agregar('Enchiladas',35)">Agregar</button>
-</div>
-</div>
-</div>
-
-<div class="category">
-<h4>Bebidas</h4>
-<div class="cards">
-<div class="card">
 <img src="refrescos.jpg">
 <h5>Refresco</h5>
 <div class="price">$18</div>
 <button class="btn-mini" onclick="agregar('Refresco',18)">Agregar</button>
 </div>
 
-<div class="card">
-<img src="agua.jpeg">
-<h5>Agua</h5>
-<div class="price">$12</div>
-<button class="btn-mini" onclick="agregar('Agua',12)">Agregar</button>
-</div>
-
-<div class="card">
-<img src="aguafresca.jpeg">
-<h5>Agua fresca</h5>
-<div class="price">$25</div>
-<button class="btn-mini" onclick="agregar('Agua fresca',25)">Agregar</button>
-</div>
-</div>
 </div>
 </div>
 
@@ -269,6 +202,9 @@ header{
 <!-- TICKET -->
 <div id="ticket" class="section hidden">
 <h3>Ticket</h3>
+
+<p><b>Pedido No:</b> <span id="numPedido"></span></p>
+
 <p><b>Fecha:</b> <span id="fecha"></span></p>
 <p><b>Hora:</b> <span id="hora"></span></p>
 
@@ -284,87 +220,59 @@ header{
 
 <script>
 let pedidos = [];
-let numeroPedido = 1; // contador automático
+let numeroPedido = 1;
 
 function mostrar(id){
-    document.getElementById('menu').classList.add('hidden');
-    document.getElementById('pedidos').classList.add('hidden');
-    document.getElementById('ticket').classList.add('hidden');
-    document.getElementById(id).classList.remove('hidden');
+document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden'));
+document.getElementById(id).classList.remove('hidden');
 
-    if(id === 'ticket'){
-        actualizarFechaHora();
-        document.getElementById("numPedido").textContent = numeroPedido;
-    }
+if(id==='ticket'){
+actualizarFechaHora();
+document.getElementById("numPedido").textContent = numeroPedido;
+}
 }
 
-function agregar(nombre, precio){
-    pedidos.push({nombre,precio});
-    actualizar();
-}
-
-function eliminar(index){
-    pedidos.splice(index,1);
-    actualizar();
+function agregar(nombre,precio){
+pedidos.push({nombre,precio});
+actualizar();
 }
 
 function actualizar(){
-    let listaPedidos = document.getElementById('listaPedidos');
-    let listaTicket = document.getElementById('listaTicket');
-    let total = 0;
+let total=0;
+let lista=document.getElementById('listaTicket');
+lista.innerHTML='';
 
-    listaPedidos.innerHTML='';
-    listaTicket.innerHTML='';
+pedidos.forEach(p=>{
+total+=p.precio;
+lista.innerHTML+=`<div class="order-item">${p.nombre} $${p.precio}</div>`;
+});
 
-    pedidos.forEach((p,i)=>{
-        total += p.precio;
-
-        listaPedidos.innerHTML += `
-        <div class="order-item">
-            ${p.nombre} $${p.precio}
-            <button class="btn-mini" onclick="eliminar(${i})">X</button>
-        </div>`;
-
-        listaTicket.innerHTML += `
-        <div class="order-item">
-            ${p.nombre} $${p.precio}
-        </div>`;
-    });
-
-    document.getElementById('total').textContent = total;
-}
-
-function actualizarFechaHora(){
-    const ahora = new Date();
-    document.getElementById("fecha").textContent = ahora.toLocaleDateString();
-    document.getElementById("hora").textContent = ahora.toLocaleTimeString();
+document.getElementById('total').textContent=total;
 }
 
 function finalizarPedido(){
-    if(pedidos.length === 0){
-        alert("No hay productos en el pedido");
-        return;
-    }
+if(pedidos.length===0) return;
+numeroPedido++;
+pedidos=[];
+actualizar();
+mostrar('menu');
+}
 
-    alert("Pedido #" + numeroPedido + " finalizado con éxito");
-
-    numeroPedido++; // aumenta el folio automáticamente
-    pedidos = [];
-    actualizar();
-    mostrar('menu');
+function actualizarFechaHora(){
+const ahora=new Date();
+fecha.textContent=ahora.toLocaleDateString();
+hora.textContent=ahora.toLocaleTimeString();
 }
 
 function imprimirTicket(){
-    if(pedidos.length === 0){
-        alert("No hay ticket para imprimir");
-        return;
-    }
-    window.print();
+window.print();
 }
 </script>
 
 </body>
 </html>
+
+
 
 
 
