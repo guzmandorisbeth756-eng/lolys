@@ -261,60 +261,132 @@ header{
 
 </div>
 </div>
-
 <script>
 let pedidos = [];
-let numeroPedido = 1;
 
+/* =========================
+   FOLIO INCREMENTAL REAL
+========================= */
+let numeroPedido = localStorage.getItem("folio")
+    ? parseInt(localStorage.getItem("folio"))
+    : 1;
+
+
+/* =========================
+   MOSTRAR SECCIONES
+========================= */
 function mostrar(id){
-document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden'));
-document.getElementById(id).classList.remove('hidden');
+    document.getElementById('menu').classList.add('hidden');
+    document.getElementById('pedidos').classList.add('hidden');
+    document.getElementById('ticket').classList.add('hidden');
+    document.getElementById(id).classList.remove('hidden');
 
-if(id==='ticket'){
-actualizarFechaHora();
-document.getElementById("numPedido").textContent = numeroPedido;
-}
+    if(id === 'ticket'){
+        actualizarFechaHora();
+
+        // 👉 formato 0001, 0002, 0003
+        document.getElementById("numPedido").textContent =
+            String(numeroPedido).padStart(4,'0');
+    }
 }
 
-function agregar(nombre,precio){
-pedidos.push({nombre,precio});
-actualizar();
+
+/* =========================
+   AGREGAR PRODUCTOS
+========================= */
+function agregar(nombre, precio){
+    pedidos.push({nombre,precio});
+    actualizar();
 }
 
+
+/* =========================
+   ELIMINAR
+========================= */
+function eliminar(index){
+    pedidos.splice(index,1);
+    actualizar();
+}
+
+
+/* =========================
+   ACTUALIZAR LISTAS
+========================= */
 function actualizar(){
-let total=0;
-let lista=document.getElementById('listaTicket');
-lista.innerHTML='';
+    let listaPedidos = document.getElementById('listaPedidos');
+    let listaTicket = document.getElementById('listaTicket');
+    let total = 0;
 
-pedidos.forEach(p=>{
-total+=p.precio;
-lista.innerHTML+=`<div class="order-item">${p.nombre} $${p.precio}</div>`;
-});
+    listaPedidos.innerHTML='';
+    listaTicket.innerHTML='';
 
-document.getElementById('total').textContent=total;
+    pedidos.forEach((p,i)=>{
+        total += p.precio;
+
+        listaPedidos.innerHTML += `
+        <div class="order-item">
+            ${p.nombre} $${p.precio}
+            <button class="btn-mini" onclick="eliminar(${i})">X</button>
+        </div>`;
+
+        listaTicket.innerHTML += `
+        <div class="order-item">
+            ${p.nombre} $${p.precio}
+        </div>`;
+    });
+
+    document.getElementById('total').textContent = total;
 }
 
-function finalizarPedido(){
-if(pedidos.length===0) return;
-numeroPedido++;
-pedidos=[];
-actualizar();
-mostrar('menu');
-}
 
+/* =========================
+   FECHA Y HORA
+========================= */
 function actualizarFechaHora(){
-const ahora=new Date();
-fecha.textContent=ahora.toLocaleDateString();
-hora.textContent=ahora.toLocaleTimeString();
+    const ahora = new Date();
+    document.getElementById("fecha").textContent = ahora.toLocaleDateString();
+    document.getElementById("hora").textContent = ahora.toLocaleTimeString();
 }
 
+
+/* =========================
+   FINALIZAR PEDIDO (INCREMENTAL PRO)
+========================= */
+function finalizarPedido(){
+    if(pedidos.length === 0){
+        alert("No hay productos en el pedido");
+        return;
+    }
+
+    alert("Pedido #" + numeroPedido + " finalizado con éxito");
+
+    // 🔥 incrementa
+    numeroPedido++;
+
+    // 🔥 guarda permanente
+    localStorage.setItem("folio", numeroPedido);
+
+    pedidos = [];
+    actualizar();
+    mostrar('menu');
+}
+
+
+/* =========================
+   IMPRIMIR
+========================= */
 function imprimirTicket(){
-window.print();
+    if(pedidos.length === 0){
+        alert("No hay ticket para imprimir");
+        return;
+    }
+    window.print();
 }
 </script>
 
 </body>
 </html>
+
 
 
 
