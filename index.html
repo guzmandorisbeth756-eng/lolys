@@ -360,16 +360,16 @@ function finalizarPedido(){
 
     alert("Pedido #" + numeroPedido + " finalizado con éxito");
 
-    // 🔥 incrementa
     numeroPedido++;
-
-    // 🔥 guarda permanente
     localStorage.setItem("folio", numeroPedido);
 
     pedidos = [];
     actualizar();
-    mostrar('menu');
+
+    // 🔥 mostrar ticket nuevo inmediatamente
+    mostrar('ticket');
 }
+
 
 
 /* =========================
@@ -386,6 +386,7 @@ function imprimirTicket(){
 
 </body>
 </html>
+
 
 
 
